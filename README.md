@@ -3,7 +3,7 @@
 A **SwiftUI-based** music app inspired by Apple Music’s sleek interface and Spotify’s modern design aesthetic!  
 This project demonstrates how to integrate **Spotify’s OAuth PKCE flow** for user authentication, fetch real data from the **Spotify Web API**, and display a minimalist, dark-themed, and mobile-focused UI.
 
-<img src="https://via.placeholder.com/600x300?text=App+Screenshot" alt="App Screenshot" width="600"/>
+<img src="MusicCloneApp/Assets.xcassets/AppPreview.png" alt="App Screenshot" width="600"/>
 
 ## ✨ Features
 
