@@ -36,7 +36,6 @@ This project demonstrates how to integrate **Spotify’s OAuth PKCE flow** for u
 
 ---
 
-
 ## 🛠 Tech Stack
 
 - **Language**: Swift 5, SwiftUI, Combine
@@ -84,8 +83,8 @@ This project demonstrates how to integrate **Spotify’s OAuth PKCE flow** for u
 
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for more details.
 
----
-
 📜 License
 
 This project is licensed under the MIT License. See LICENSE for more details.
+
+---
