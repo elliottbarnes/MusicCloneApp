@@ -1,0 +1,16 @@
+echo "
+# Xcode
+build/
+DerivedData/
+*.xcuserstate
+
+# Swift Package Manager
+.build/
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Build/
+" > .gitignore

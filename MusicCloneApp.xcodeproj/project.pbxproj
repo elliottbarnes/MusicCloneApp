@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		721746052D0FC71F006CDE59 /* MusicCloneAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 721746042D0FC71F006CDE59 /* MusicCloneAppApp.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		721745AD2D0FC1AC006CDE59 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,11 +31,25 @@
 		7217459B2D0FC1AA006CDE59 /* MusicCloneApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicCloneApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		721745AC2D0FC1AC006CDE59 /* MusicCloneAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MusicCloneAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		721745B62D0FC1AC006CDE59 /* MusicCloneAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MusicCloneAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		721746042D0FC71F006CDE59 /* MusicCloneAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicCloneAppApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		721746112D0FCB29006CDE59 /* Exceptions for "MusicCloneApp" folder in "MusicCloneApp" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 7217459A2D0FC1AA006CDE59 /* MusicCloneApp */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		7217459D2D0FC1AA006CDE59 /* MusicCloneApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				721746112D0FCB29006CDE59 /* Exceptions for "MusicCloneApp" folder in "MusicCloneApp" target */,
+			);
 			path = MusicCloneApp;
 			sourceTree = "<group>";
 		};
@@ -75,6 +93,7 @@
 		721745922D0FC1AA006CDE59 = {
 			isa = PBXGroup;
 			children = (
+				721746042D0FC71F006CDE59 /* MusicCloneAppApp.swift */,
 				7217459D2D0FC1AA006CDE59 /* MusicCloneApp */,
 				721745AF2D0FC1AC006CDE59 /* MusicCloneAppTests */,
 				721745B92D0FC1AC006CDE59 /* MusicCloneAppUITests */,
@@ -236,6 +255,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				721746052D0FC71F006CDE59 /* MusicCloneAppApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -396,6 +416,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MusicCloneApp/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -435,6 +456,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MusicCloneApp/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
