@@ -25,7 +25,7 @@ struct MusicCloneAppApp: App {
         _spotifyAPI = StateObject(wrappedValue: api)
         _authVM = StateObject(wrappedValue: AuthViewModel(
             spotifyAPI: api,
-            clientID: "7641893b28ee4413a5cd7c99db94d934",
+            clientID: "YOUR_CLIENT_ID",
             redirectURI: "myapp://spotify/callback"
         ))
     }
