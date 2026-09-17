@@ -17,7 +17,7 @@ This project demonstrates how to integrate **Spotify’s OAuth PKCE flow** for u
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/yourusername/MusicCloneApp.git
+   git clone https://github.com/elliottbarnes/MusicCloneApp.git
    cd MusicCloneApp
    ```
 2. **Open in Xcode**:
@@ -81,10 +81,6 @@ This project demonstrates how to integrate **Spotify’s OAuth PKCE flow** for u
 
 ## 📜 License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for more details.
-
-📜 License
-
-This project is licensed under the MIT License. See LICENSE for more details.
+This README previously identified the project as MIT-licensed, but no license file is included in the repository. A license file still needs to be added by the maintainer to clarify the terms of reuse.
 
 ---
