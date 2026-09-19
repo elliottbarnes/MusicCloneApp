@@ -3,7 +3,6 @@
 A **SwiftUI-based** music app inspired by Apple Music’s sleek interface and Spotify’s modern design aesthetic!  
 This project demonstrates how to integrate **Spotify’s OAuth PKCE flow** for user authentication, fetch real data from the **Spotify Web API**, and display a minimalist, dark-themed, and mobile-focused UI.
 
-<img src="MusicCloneApp/Assets.xcassets/AppPreview.png" alt="App Screenshot" width="600"/>
 
 ## ✨ Features
 
@@ -21,8 +20,8 @@ This project demonstrates how to integrate **Spotify’s OAuth PKCE flow** for u
    cd MusicCloneApp
    ```
 2. **Open in Xcode**:
-   - Open `MusicCloneApp.xcodeproj` (or `.xcworkspace` if using Swift Packages).
-   - Make sure you’re running Xcode 14 or later (iOS 14+ compatibility).
+   - Open `MusicCloneApp.xcodeproj`.
+   - Make sure you’re running an Xcode version supporting the project’s iOS 18.2 deployment target.
 
 3. **Set Your Spotify Credentials**:
    - Sign in to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/).
