@@ -8,16 +8,24 @@ import Combine
     private var expiresAt = Date.distantPast
     private var clientID = ""
     private var refreshTask: Task<TokenResponse, Error>?
+    private var sessionID = UUID()
+    private var refreshID: UUID?
     private let session: URLSession
     init(session: URLSession = .shared) { self.session = session }
     func useDemo() { clear(); isDemo = true }
     func clear() {
+        sessionID = UUID(); refreshID = nil
         refreshTask?.cancel(); refreshTask = nil
         accessToken = nil; refreshToken = nil; expiresAt = .distantPast
         isDemo = false; clientID = ""
     }
     func setSession(_ token: TokenResponse, clientID: String) {
-        self.clientID = clientID; accessToken = token.access_token
+        clear()
+        self.clientID = clientID
+        applyToken(token)
+    }
+    private func applyToken(_ token: TokenResponse) {
+        accessToken = token.access_token
         if let refresh = token.refresh_token { refreshToken = refresh }
         expiresAt = Date().addingTimeInterval(Double(token.expires_in))
         isDemo = false
@@ -34,7 +42,9 @@ import Combine
         guard let accessToken else { throw CatalogError.signedOut }
         if expiresAt.timeIntervalSinceNow > 30 { return accessToken }
         guard let refreshToken else { throw CatalogError.signedOut }
+        let generation = sessionID
         if refreshTask == nil {
+            refreshID = UUID()
             let id = clientID, session = session
             refreshTask = Task {
                 var request = URLRequest(url: URL(string: "https://accounts.spotify.com/api/token")!)
@@ -47,13 +57,17 @@ import Combine
                 return try JSONDecoder().decode(TokenResponse.self, from: data)
             }
         }
-        guard let task = refreshTask else { throw CatalogError.signedOut }
-        defer { refreshTask = nil }
+        guard let task = refreshTask, let taskID = refreshID else { throw CatalogError.signedOut }
+        defer {
+            if sessionID == generation && refreshID == taskID { refreshTask = nil; refreshID = nil }
+        }
         let token = try await task.value
         try Task.checkCancellation()
-        guard self.accessToken != nil, !isDemo else { throw CatalogError.signedOut }
-        setSession(token, clientID: clientID)
-        return token.access_token
+        guard sessionID == generation, !isDemo else { throw CatalogError.signedOut }
+        // The first waiter installs the result. A late waiter must not overwrite a newer refresh.
+        if refreshID == taskID { applyToken(token) }
+        guard let currentToken = self.accessToken else { throw CatalogError.signedOut }
+        return currentToken
     }
     private func request(url: URL) async throws -> Data {
         var request = URLRequest(url: url)

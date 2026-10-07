@@ -64,7 +64,7 @@ final class CoreTests: XCTestCase {
         XCTAssertFalse(auth.isConfigured)
         auth.startDemo(); XCTAssertTrue(auth.isAuthorized)
         auth.signOut(); XCTAssertFalse(auth.isAuthorized)
-        api.useDemo(); XCTAssertEqual(try? await api.fetchNewReleases().count, 6)
+        api.useDemo(); let albums = try? await api.fetchNewReleases(); XCTAssertEqual(albums?.count, 6)
         api.clear()
         do { _ = try await api.fetchNewReleases(); XCTFail("Signed-out API must fail") } catch { }
     }
