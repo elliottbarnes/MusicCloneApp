@@ -1,43 +1,19 @@
-//
-//  MusicCloneAppUITests.swift
-//  MusicCloneAppUITests
-//
-//  Created by Elliott Barnes on 2024-12-15.
-//
-
 import XCTest
 
 final class MusicCloneAppUITests: XCTestCase {
-
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
+    @MainActor func testOfflineHomeSearchLibraryFlow() throws {
         continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
-        app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-
-    @MainActor
-    func testLaunchPerformance() throws {
-        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
-            // This measures how long it takes to launch your application.
-            measure(metrics: [XCTApplicationLaunchMetric()]) {
-                XCUIApplication().launch()
-            }
-        }
+        let app = XCUIApplication(); app.launch()
+        app.buttons["Try offline demo"].tap()
+        XCTAssertTrue(app.buttons["Save Night Windows"].waitForExistence(timeout: 5))
+        app.buttons["Save Night Windows"].tap()
+        app.tabBars.buttons["Library"].tap()
+        XCTAssertTrue(app.buttons["Preview Night Windows"].waitForExistence(timeout: 5), app.debugDescription)
+        app.tabBars.buttons["Search"].tap()
+        XCTAssertTrue(app.textFields["albumSearch"].waitForExistence(timeout: 5), app.debugDescription)
+        app.textFields["albumSearch"].tap(); app.textFields["albumSearch"].typeText("Mara")
+        XCTAssertTrue(app.buttons["Preview Low Tide"].waitForExistence(timeout: 5))
+        app.buttons["Preview Low Tide"].tap()
+        XCTAssertTrue(app.buttons["Pause preview"].exists)
     }
 }

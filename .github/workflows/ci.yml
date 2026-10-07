@@ -1,0 +1,72 @@
+name: Checks and Pages
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '24'
+      - run: node --test tests/web/*.test.mjs
+  native:
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - run: swift test
+      - name: Build macOS app
+        run: xcodebuild -project MusicCloneApp.xcodeproj -scheme MusicCloneApp -destination 'platform=macOS' -derivedDataPath DerivedData CODE_SIGNING_ALLOWED=NO build
+      - name: Choose available iPhone simulator
+        run: |
+          xcrun simctl list devices available --json > /tmp/music-simulators.json
+          python3 - <<'PYTHON'
+          import json, os
+          data = json.load(open('/tmp/music-simulators.json'))
+          phones = [d for runtime, devices in data['devices'].items() if '.iOS-' in runtime for d in devices if d['name'].startswith('iPhone')]
+          assert phones, 'No iPhone simulator is installed'
+          with open(os.environ['GITHUB_ENV'], 'a') as f:
+              f.write('MUSIC_SIMULATOR=' + phones[0]['udid'] + '\n')
+          PYTHON
+      - name: Test offline iOS flow
+        run: xcodebuild -project MusicCloneApp.xcodeproj -scheme MusicCloneApp -destination "platform=iOS Simulator,id=$MUSIC_SIMULATOR" -derivedDataPath DerivedData -parallel-testing-enabled NO CODE_SIGNING_ALLOWED=NO test
+  pages-artifact:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: [native, browser]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b
+        with:
+          path: demo
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: pages-artifact
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e
+        id: deployment

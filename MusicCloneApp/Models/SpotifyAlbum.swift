@@ -17,6 +17,10 @@ struct SpotifyAlbum: Identifiable, Decodable {
         artists.map { $0.name }.joined(separator: ", ")
     }
 
+    var previewTrack: SpotifyTrack {
+        SpotifyTrack(id: "preview-" + id, name: name, artists: artists, duration_ms: 180000)
+    }
+
     var artworkURL: URL? {
         images.first?.url
     }

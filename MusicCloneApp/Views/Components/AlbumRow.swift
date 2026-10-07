@@ -1,42 +1,24 @@
-//
-//  AlbumRow.swift
-//  MusicCloneApp
-//
-//  Created by Elliott Barnes on 2024-12-15.
-//
-
 import SwiftUI
 
 struct AlbumRow: View {
     let album: SpotifyAlbum
-    
+    @EnvironmentObject private var player: PlayerViewModel
+    @EnvironmentObject private var library: LibraryViewModel
     var body: some View {
-        HStack(spacing: 15) {
-            if let url = album.artworkURL {
-                AsyncImage(url: url) { img in
-                    img.resizable().scaledToFill()
-                } placeholder: {
-                    Color.gray
+        HStack(spacing: 14) {
+            Button { player.play(track: album.previewTrack) } label: {
+                HStack {
+                    AlbumArtwork(album: album).frame(width: 56, height: 56)
+                    VStack(alignment: .leading) {
+                        Text(album.name).font(.headline)
+                        Text(album.artistName).font(.caption).foregroundStyle(.secondary)
+                    }
                 }
-                .frame(width: 60, height: 60)
-                .cornerRadius(8)
-            } else {
-                Color.gray.frame(width:60, height:60).cornerRadius(8)
-            }
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(album.name)
-                    .font(.headline)
-                    .lineLimit(1)
-                Text(album.artistName)
-                    .font(.subheadline)
-                    .foregroundColor(.gray)
-                    .lineLimit(1)
-            }
-
+            }.buttonStyle(.borderless).accessibilityLabel("Preview \(album.name)")
             Spacer()
+            Button { library.toggle(album) } label: {
+                Image(systemName: library.contains(album) ? "checkmark.circle.fill" : "plus.circle")
+            }.buttonStyle(.borderless).accessibilityLabel("\(library.contains(album) ? "Remove" : "Save") \(album.name)")
         }
-        .contentShape(Rectangle())
-        .foregroundColor(.white)
     }
 }

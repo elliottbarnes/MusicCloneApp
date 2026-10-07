@@ -1,16 +1,15 @@
-//
-//  MusicCloneAppTests.swift
-//  MusicCloneAppTests
-//
-//  Created by Elliott Barnes on 2024-12-15.
-//
+import XCTest
+@testable import MusicCloneApp
 
-import Testing
-
-struct MusicCloneAppTests {
-
-    @Test func example() async throws {
-        // Write your test here and use APIs like `#expect(...)` to check expected conditions.
+final class MusicCloneAppTests: XCTestCase {
+    @MainActor func testOfflineSessionLoadsCatalogAndSharesLibraryState() async throws {
+        let api = SpotifyAPI(); api.useDemo()
+        let home = HomeViewModel(spotifyAPI: api); await home.loadData()
+        XCTAssertEqual(home.featured.count, 6)
+        let library = LibraryViewModel(); library.toggle(home.featured[0])
+        XCTAssertTrue(library.contains(home.featured[0]))
+        let player = PlayerViewModel(); player.play(track: home.featured[0].previewTrack)
+        player.advance(seconds: 180)
+        XCTAssertFalse(player.isPlaying); XCTAssertEqual(player.progress, 1)
     }
-
 }

@@ -1,83 +1,25 @@
-//
-//  SearchView.swift
-//  MusicCloneApp
-//
-//  Created by Elliott Barnes on 2024-12-15.
-//
-
 import SwiftUI
 
-#if os(iOS)
-import UIKit
-#endif
-
-#if os(macOS)
-import AppKit
-#endif
-
 struct SearchView: View {
-    @EnvironmentObject var spotifyAPI: SpotifyAPI
-    @EnvironmentObject var playerVM: PlayerViewModel
-    @StateObject var viewModel: SearchViewModel
-
-    init() {
-        let viewModel = SearchViewModel(spotifyAPI: SpotifyAPI())
-        _viewModel = StateObject(wrappedValue: viewModel)
+    @StateObject private var viewModel: SearchViewModel
+    init(spotifyAPI: SpotifyAPI) {
+        _viewModel = StateObject(wrappedValue: SearchViewModel(spotifyAPI: spotifyAPI))
     }
-
     var body: some View {
-        VStack(spacing: 0) {
-            HStack {
-                TextField("Search albums", text: $viewModel.query)
-                    .padding()
-                    #if os(iOS)
-                    .background(Color(UIColor.systemGray4))
-                    #elseif os(macOS)
-                    .background(Color(NSColor.systemGray))
-                    #endif
-                    .cornerRadius(8)
-                    .foregroundColor(.black)
-                    .onChange(of: viewModel.query) { _ in
-                        viewModel.search()
-                    }
-            }
-            .padding()
-
-            List {
-                ForEach(viewModel.results) { album in
-                    HStack {
-                        if let url = album.artworkURL {
-                            AsyncImage(url: url) { img in
-                                img.resizable().scaledToFill()
-                            } placeholder: {
-                                Color.gray
-                            }
-                            .frame(width: 50, height: 50)
-                            .cornerRadius(4)
-                        } else {
-                            Color.gray.frame(width:50, height:50).cornerRadius(4)
-                        }
-
-                        VStack(alignment: .leading) {
-                            Text(album.name)
-                                .font(.headline)
-                            Text(album.artistName)
-                                .font(.subheadline)
-                                .foregroundColor(.gray)
-                        }
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        let track = SpotifyTrack(id: "fake-track", name: album.name, artists: album.artists, duration_ms: 180000)
-                        playerVM.play(track: track)
-                    }
-                    .listRowBackground(Color.black)
+        NavigationStack {
+            VStack(spacing: 16) {
+                TextField("Search albums or artists", text: $viewModel.query)
+                    .textFieldStyle(.roundedBorder).padding(.horizontal)
+                    .accessibilityIdentifier("albumSearch")
+                if viewModel.isLoading { ProgressView("Searching") }
+                if let error = viewModel.errorMessage { Text(error).foregroundStyle(.orange) }
+                if !viewModel.isLoading && viewModel.results.isEmpty {
+                    ContentUnavailableView(viewModel.query.isEmpty ? "Find an album" : "No matching albums",
+                        systemImage: "magnifyingglass", description: Text("Try a title or artist name."))
+                } else {
+                    List(viewModel.results) { album in AlbumRow(album: album) }
                 }
-            }
-            .listStyle(PlainListStyle())
-            .background(Color.black)
-            .foregroundColor(.white)
-        }
-        .background(Color.black.edgesIgnoringSafeArea(.all))
+            }.navigationTitle("Search")
+        }.task(id: viewModel.query) { await viewModel.search() }
     }
 }

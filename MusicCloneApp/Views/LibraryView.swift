@@ -1,19 +1,15 @@
-//
-//  LibraryView.swift
-//  MusicCloneApp
-//
-//  Created by Elliott Barnes on 2024-12-15.
-//
-
 import SwiftUI
 
 struct LibraryView: View {
+    @EnvironmentObject private var library: LibraryViewModel
     var body: some View {
-        Text("Your Library")
-            .font(.largeTitle)
-            .bold()
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color.black.edgesIgnoringSafeArea(.all))
+        NavigationStack {
+            Group {
+                if library.albums.isEmpty {
+                    ContentUnavailableView("Your collection starts here", systemImage: "square.stack",
+                        description: Text("Save an album from Home or Search. This library lasts for this session."))
+                } else { List(library.albums) { album in AlbumRow(album: album) } }
+            }.navigationTitle("Library")
+        }
     }
 }
