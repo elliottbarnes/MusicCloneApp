@@ -1,49 +1,34 @@
-//
-//  NowPlayingBar.swift
-//  MusicCloneApp
-//
-//  Created by Elliott Barnes on 2024-12-15.
-//
-
 import SwiftUI
 
-#if os(iOS)
-import UIKit
-#endif
-
-#if os(macOS)
-import AppKit
-#endif
-
 struct NowPlayingBar: View {
-    @EnvironmentObject var playerVM: PlayerViewModel
-    let track: SpotifyTrack
-
-    var backgroundColor: Color {
-        #if os(iOS)
-        Color(UIColor.systemGray4)
-        #elseif os(macOS)
-        Color(NSColor.systemGray)
-        #endif
-    }
-
+    @EnvironmentObject private var player: PlayerViewModel
     var body: some View {
-        VStack {
-            Divider().background(Color.gray)
+        VStack(spacing: 8) {
             HStack {
-                Text(track.name)
-                    .lineLimit(1)
-                    .font(.headline)
-                    .foregroundColor(.white)
-                Spacer()
-                Button(action: { playerVM.togglePlayPause() }) {
-                    Image(systemName: playerVM.isPlaying ? "pause.fill" : "play.fill")
-                        .foregroundColor(.white)
+                VStack(alignment: .leading) {
+                    Text(player.currentTrack?.name ?? "Choose an album").font(.headline)
+                    Text("Playback simulation · no audio").font(.caption).foregroundStyle(.secondary)
                 }
+                Spacer()
+                Button { player.togglePlayPause() } label: {
+                    Image(systemName: player.isPlaying ? "pause.fill" : "play.fill").padding(8)
+                }.disabled(player.currentTrack == nil)
+                    .accessibilityLabel(player.isPlaying ? "Pause preview" : "Play preview")
             }
-            .padding(.horizontal)
-            .padding(.bottom, 10)
+            Slider(value: Binding(get: { player.progress }, set: { player.seek(to: $0) }), in: 0...1)
+                .disabled(player.currentTrack == nil).accessibilityLabel("Preview progress")
+        }.padding().background(.regularMaterial)
+        .task {
+            // Monotonic elapsed time; pause stops advancement and leaving the view cancels the task.
+            let clock = ContinuousClock()
+            var previous = clock.now
+            while !Task.isCancelled {
+                do { try await Task.sleep(for: .milliseconds(250)) } catch { return }
+                let now = clock.now
+                let delta = previous.duration(to: now).components
+                player.advance(seconds: Double(delta.seconds) + Double(delta.attoseconds) / 1e18)
+                previous = now
+            }
         }
-        .background(backgroundColor)
     }
 }

@@ -1,85 +1,70 @@
-# 🎶 MusicCloneApp
+# MusicCloneApp
 
-A **SwiftUI-based** music app inspired by Apple Music’s sleek interface and Spotify’s modern design aesthetic!  
-This project demonstrates how to integrate **Spotify’s OAuth PKCE flow** for user authentication, fetch real data from the **Spotify Web API**, and display a minimalist, dark-themed, and mobile-focused UI.
+A small SwiftUI music-library app with a complete offline demo: browse six fictional
+albums, search titles and artists, save/remove albums, and use a simulated player.
+Home, Search, Library, and the player share one session. No audio is streamed.
 
+**[Try the interactive browser example](https://elliottbarnes.github.io/MusicCloneApp/)** ·
+[Native source](MusicCloneApp) · [Verification](docs/VERIFICATION.md)
 
-## ✨ Features
+## Run the native app
 
-- **Spotify Integration**: Real user authentication using the OAuth 2.0 Authorization Code Flow with PKCE.  
-- **Modern UI**: A slick, dark interface blending Apple’s design principles with a Spotify-like vibe.  
-- **SwiftUI & Combine**: A modern codebase using SwiftUI for UI and Combine/async-await for data handling.  
-- **Dynamic Content**: Fetches featured and recommended albums from the Spotify API.  
-- **Player Controls**: A minimalist Now Playing bar at the bottom of the screen, simulating track playback.
+Open `MusicCloneApp.xcodeproj` in Xcode 16.4 or newer, choose the shared
+`MusicCloneApp` scheme and an iOS 18.2+ simulator or macOS 15.2+ destination, then Run.
+Choose **Try offline demo**. No Spotify credentials, subscription, model, or backend
+is needed. The library is session-only; **End session** clears it and player state.
 
-## 🚀 Getting Started
+Album metadata and procedural cover designs are original fictional demo material.
+The three-minute preview advances UI state only; there are no recordings or playback SDKs.
+This is an independent learning project, not an official Spotify product.
 
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/elliottbarnes/MusicCloneApp.git
-   cd MusicCloneApp
-   ```
-2. **Open in Xcode**:
-   - Open `MusicCloneApp.xcodeproj`.
-   - Make sure you’re running an Xcode version supporting the project’s iOS 18.2 deployment target.
+## Run the browser example
 
-3. **Set Your Spotify Credentials**:
-   - Sign in to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/).
-   - Create an app, add your **Client ID** and **Redirect URI** to the project:
-     - In `AuthViewModel.swift`, replace `"YOUR_CLIENT_ID"` with your client ID.
-     - Replace `"myapp://spotify/callback"` with your registered redirect URI.
-   - Add the corresponding URL scheme to your Info.plist.
+```sh
+python3 -m http.server 8000 --bind 127.0.0.1 --directory demo
+```
 
-4. **Run the App**:  
-   Press **Run** in Xcode. On the first launch, tap **"Authorize with Spotify"**. Sign in and approve scopes. You should now see your personalized home screen and album recommendations!
+Open `http://127.0.0.1:8000`. Search, save/remove, play/pause, seek, end-of-track,
+and reset all work without network requests. A hidden tab pauses its simulation.
+Reload/reset clears session state. The example is a JavaScript adaptation of the
+SwiftUI flows; it does not execute Swift in the browser.
 
----
+## Optional Spotify catalog integration
 
-## 🛠 Tech Stack
+The offline demo is the verified default. An optional metadata-only PKCE adapter
+remains available for a developer-owned Spotify app. It has not been verified with
+live credentials. It does not provide personalized recommendations, account-library
+sync, streaming, or persistent login.
 
-- **Language**: Swift 5, SwiftUI, Combine
-- **Platforms**: iOS (easily adaptable to macOS with conditional compilation)
-- **Spotify Web API**: For fetching albums, tracks, and user data.
-- **OAuth PKCE**: Secure authentication without exposing a client secret.
+To configure it, add public `SpotifyClientID` and `SpotifyRedirectURI` strings to
+`MusicCloneApp/Info.plist`. The redirect must be an exact registered HTTPS URL with
+a path, no query or fragment. Configure your signed app's **Associated Domains**
+capability with `webcredentials:YOUR_DOMAIN` and host the matching Apple association
+file on that domain. No working domain/client ID is included. This setup requires
+control of that domain and Apple signing; it is not a one-line client-ID change.
+Never add a client secret. The Connect button appears only after valid local values
+are supplied.
 
-## 📚 Code Structure
+The adapter retains the authentication session, uses an S256 challenge and random
+state, rejects mismatched/duplicate callbacks, form-encodes token requests, and keeps
+tokens only in memory. It refreshes expiring access tokens; ending the session clears
+them. Search cancellation prevents older responses from replacing a newer query.
+Catalog errors are visible and do not silently substitute fictional albums.
 
-- **Models/**: Data models for `SpotifyAlbum`, `SpotifyTrack`.
-- **Network/**: `SpotifyAPI` and `SpotifyEndpoints` handle requests and data fetching.
-- **ViewModels/**:
-  - **AuthViewModel**: Manages Spotify OAuth flow.
-  - **HomeViewModel**: Fetches featured/recommended albums.
-  - **SearchViewModel**: Handles Spotify album searches.
-  - **PlayerViewModel**: Simulates track playback state.
-- **Views/**:
-  - `ContentView`, `AuthView`, `HomeView`, `SearchView`, `LibraryView`
-  - `Components/` folder for small reusable UI parts like `AlbumCard`, `AlbumRow`, and `SectionHeader`.
+Spotify app access and available catalog endpoints depend on the app's current access
+mode. See [PKCE](https://developer.spotify.com/documentation/web-api/tutorials/code-pkce-flow),
+[redirect requirements](https://developer.spotify.com/documentation/web-api/concepts/redirect_uri),
+and [quota modes](https://developer.spotify.com/documentation/web-api/concepts/quota-modes).
+There is no login or token handling in the GitHub Pages example.
 
-## 🔐 Security & Privacy
+## Checks
 
-- Uses PKCE for secure authorization without storing the client secret in the app.
-- Tokens are handled in-memory (consider storing refresh tokens securely in Keychain for production).
+With Xcode selected via `xcode-select`, run `swift test` for catalog, player, library,
+search cancellation and OAuth helper tests. Run `node --test tests/web/*.test.mjs`
+with Node 24 for browser-state checks. Xcode's Test action includes an offline
+Home → Library → Search → player UI test on iOS. CI also builds the macOS app and
+publishes only `demo/` after all native and browser checks pass on `main`.
 
-## 💡 Future Improvements
-
-- **Real Playback**: Integrate Spotify’s iOS SDK for actual track playback control.
-- **Token Refresh**: Automatically refresh expired tokens.
-- **More Data**: Display user playlists, saved tracks, and personalized recommendations.
-- **Offline Support**: Caching and persistence for offline use.
-
-## 🤝 Contributing
-
-- Feel free to open issues, suggest features, or submit pull requests.
-- Follow the project’s coding guidelines and ensure all code passes SwiftLint checks if added.
-
-## ❤️ Acknowledgments
-
-- **Spotify Developer Platform** for the Web API and OAuth flow.
-- **SwiftUI & Combine**: The amazing frameworks that simplify iOS development.
-- **You** for checking out this project!
-
-## 📜 License
-
-This README previously identified the project as MIT-licensed, but no license file is included in the repository. A license file still needs to be added by the maintainer to clarify the terms of reuse.
-
----
+The project does not currently declare a software license. No new license is inferred
+from its public visibility. Historical source remains in Git history; the previous
+custom-scheme callback and placeholder login are replaced by the explicit setup above.

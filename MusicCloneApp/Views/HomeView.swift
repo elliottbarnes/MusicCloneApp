@@ -1,65 +1,30 @@
-//
-//  HomeView.swift
-//  MusicCloneApp
-//
-//  Created by Elliott Barnes on 2024-12-15.
-//
-
 import SwiftUI
 
 struct HomeView: View {
-    @EnvironmentObject var spotifyAPI: SpotifyAPI
-    @EnvironmentObject var playerVM: PlayerViewModel
-    @StateObject var viewModel: HomeViewModel
-
-    init() {
-        let viewModel = HomeViewModel(spotifyAPI: SpotifyAPI())
-        _viewModel = StateObject(wrappedValue: viewModel)
+    @StateObject private var viewModel: HomeViewModel
+    let spotifyAPI: SpotifyAPI
+    init(spotifyAPI: SpotifyAPI) {
+        self.spotifyAPI = spotifyAPI
+        _viewModel = StateObject(wrappedValue: HomeViewModel(spotifyAPI: spotifyAPI))
     }
-
     var body: some View {
-        ZStack(alignment: .bottom) {
+        NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    SectionHeader(title: "Featured")
-
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 15) {
-                            ForEach(viewModel.featuredAlbums) { album in
-                                AlbumCard(album: album)
-                                    .onTapGesture {
-                                        let track = SpotifyTrack(id: "fake-track", name: album.name, artists: album.artists, duration_ms: 180000)
-                                        playerVM.play(track: track)
-                                    }
-                            }
-                        }
-                        .padding(.horizontal)
+                    Text(spotifyAPI.isDemo ? "A small collection.\nA little discovery." : "New releases")
+                        .font(.largeTitle.bold())
+                    Text(spotifyAPI.isDemo ? "Fictional albums · playback simulation · session-only library" : "Spotify catalog · playback simulation")
+                        .font(.caption).foregroundStyle(.secondary)
+                    if viewModel.isLoading { ProgressView("Loading albums") }
+                    if let error = viewModel.errorMessage {
+                        Text(error).foregroundStyle(.orange)
+                        Button("Retry") { Task { await viewModel.loadData() } }
                     }
-
-                    SectionHeader(title: "Recommended For You")
-
-                    VStack(spacing: 15) {
-                        ForEach(viewModel.recommendedAlbums) { album in
-                            AlbumRow(album: album)
-                                .onTapGesture {
-                                    let track = SpotifyTrack(id: "fake-track", name: album.name, artists: album.artists, duration_ms: 180000)
-                                    playerVM.play(track: track)
-                                }
-                        }
+                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 24) {
+                        ForEach(viewModel.featured) { album in AlbumCard(album: album) }
                     }
-                    .padding(.horizontal)
-                }
-                .padding(.vertical)
-            }
-
-            if let currentTrack = playerVM.currentTrack {
-                NowPlayingBar(track: currentTrack)
-            }
-        }
-        .background(Color.black.edgesIgnoringSafeArea(.all))
-        .foregroundColor(.white)
-        .task {
-            await viewModel.loadData()
-        }
+                }.padding(24)
+            }.navigationTitle("Discover")
+        }.task { await viewModel.loadData() }
     }
 }

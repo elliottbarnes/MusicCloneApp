@@ -1,31 +1,14 @@
-//
-//  ContentView.swift
-//  MusicCloneApp
-//
-//  Created by Elliott Barnes on 2024-12-15.
-//
-
 import SwiftUI
 
 struct ContentView: View {
+    let spotifyAPI: SpotifyAPI
     var body: some View {
         TabView {
-            HomeView()
-                .tabItem {
-                    Label("Home", systemImage: "house.fill")
-                }
-
-            SearchView()
-                .tabItem {
-                    Label("Search", systemImage: "magnifyingglass")
-                }
-
-            LibraryView()
-                .tabItem {
-                    Label("Library", systemImage: "music.note.list")
-                }
+            HomeView(spotifyAPI: spotifyAPI).tabItem { Label("Home", systemImage: "house") }
+            SearchView(spotifyAPI: spotifyAPI).tabItem { Label("Search", systemImage: "magnifyingglass") }
+            LibraryView().tabItem { Label("Library", systemImage: "square.stack") }
         }
-        .accentColor(.white)
-        .background(Color.black.edgesIgnoringSafeArea(.all))
+        .safeAreaInset(edge: .bottom, spacing: 0) { NowPlayingBar() }
+        .tint(.mint)
     }
 }

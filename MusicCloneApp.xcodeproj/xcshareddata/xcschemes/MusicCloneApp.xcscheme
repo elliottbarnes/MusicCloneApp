@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scheme LastUpgradeVersion="1640" version="1.3">
+<BuildAction parallelizeBuildables="YES" buildImplicitDependencies="YES"><BuildActionEntries><BuildActionEntry buildForTesting="YES" buildForRunning="YES" buildForProfiling="YES" buildForArchiving="YES" buildForAnalyzing="YES"><BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="7217459A2D0FC1AA006CDE59" BuildableName="MusicCloneApp.app" BlueprintName="MusicCloneApp" ReferencedContainer="container:MusicCloneApp.xcodeproj"/></BuildActionEntry></BuildActionEntries></BuildAction>
+<TestAction buildConfiguration="Debug" shouldUseLaunchSchemeArgsEnv="YES"><Testables>
+<TestableReference skipped="NO"><BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="721745AB2D0FC1AC006CDE59" BuildableName="MusicCloneAppTests.xctest" BlueprintName="MusicCloneAppTests" ReferencedContainer="container:MusicCloneApp.xcodeproj"/></TestableReference>
+<TestableReference skipped="NO"><BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="721745B52D0FC1AC006CDE59" BuildableName="MusicCloneAppUITests.xctest" BlueprintName="MusicCloneAppUITests" ReferencedContainer="container:MusicCloneApp.xcodeproj"/></TestableReference>
+</Testables></TestAction>
+<LaunchAction buildConfiguration="Debug" useCustomWorkingDirectory="NO" ignoresPersistentStateOnLaunch="NO" debugDocumentVersioning="YES" allowLocationSimulation="YES"><BuildableProductRunnable runnableDebuggingMode="0"><BuildableReference BuildableIdentifier="primary" BlueprintIdentifier="7217459A2D0FC1AA006CDE59" BuildableName="MusicCloneApp.app" BlueprintName="MusicCloneApp" ReferencedContainer="container:MusicCloneApp.xcodeproj"/></BuildableProductRunnable></LaunchAction>
+<ProfileAction buildConfiguration="Release" shouldUseLaunchSchemeArgsEnv="YES" savedToolIdentifier="" useCustomWorkingDirectory="NO" debugDocumentVersioning="YES"/><AnalyzeAction buildConfiguration="Debug"/><ArchiveAction buildConfiguration="Release" revealArchiveInOrganizer="YES"/>
+</Scheme>

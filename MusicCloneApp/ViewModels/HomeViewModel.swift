@@ -1,31 +1,17 @@
-//
-//  HomeViewModel.swift
-//  MusicCloneApp
-//
-//  Created by Elliott Barnes on 2024-12-15.
-//
-
 import Foundation
+import Combine
 
-class HomeViewModel: ObservableObject {
-    @Published var featuredAlbums: [SpotifyAlbum] = []
-    @Published var recommendedAlbums: [SpotifyAlbum] = []
-
+@MainActor final class HomeViewModel: ObservableObject {
+    @Published private(set) var featured: [SpotifyAlbum] = []
+    @Published private(set) var isLoading = false
+    @Published private(set) var errorMessage: String?
     private let spotifyAPI: SpotifyAPI
-
-    init(spotifyAPI: SpotifyAPI) {
-        self.spotifyAPI = spotifyAPI
-    }
-
+    init(spotifyAPI: SpotifyAPI) { self.spotifyAPI = spotifyAPI }
     func loadData() async {
-        do {
-            let newReleases = try await spotifyAPI.fetchNewReleases()
-            await MainActor.run {
-                self.featuredAlbums = Array(newReleases.prefix(6))
-                self.recommendedAlbums = Array(newReleases.shuffled().prefix(6))
-            }
-        } catch {
-            print("Failed to load data: \(error)")
-        }
+        isLoading = true; errorMessage = nil
+        defer { isLoading = false }
+        do { featured = try await spotifyAPI.fetchNewReleases() }
+        catch is CancellationError { }
+        catch { featured = []; errorMessage = error.localizedDescription }
     }
 }
