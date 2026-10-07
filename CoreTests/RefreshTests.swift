@@ -26,7 +26,13 @@ private final class RefreshFixture: @unchecked Sendable {
     func receive(_ request: SessionProtocol) {
         lock.lock()
         if request.request.url!.path == "/api/token" {
-            tokenRequests += 1; pending = request
+            tokenRequests += 1
+            if tokenRequests > 1 {
+                lock.unlock()
+                request.finish("{\"access_token\":\"redundant-refresh\",\"token_type\":\"Bearer\",\"expires_in\":3600}")
+                return
+            }
+            pending = request
             let expectation = started; started = nil; lock.unlock(); expectation?.fulfill()
         } else {
             headers.append(request.request.value(forHTTPHeaderField: "Authorization") ?? "")
@@ -56,6 +62,18 @@ final class RefreshTests: XCTestCase {
         _ = try await first.value; _ = try await second.value
         XCTAssertEqual(SessionProtocol.fixture.snapshot().0, 1)
         XCTAssertEqual(SessionProtocol.fixture.snapshot().1, ["Bearer refreshed", "Bearer refreshed"])
+    }
+    @MainActor func testCancelledWaiterDoesNotDiscardSuccessfulSharedRefresh() async throws {
+        let ready = expectation(description: "Refresh started"); SessionProtocol.fixture.reset(ready)
+        let api = api()
+        let cancelled = Task { try await api.searchAlbums(query: "old query") }
+        await fulfillment(of: [ready], timeout: 3)
+        cancelled.cancel()
+        SessionProtocol.fixture.release()
+        do { _ = try await cancelled.value; XCTFail("Cancelled caller must stay cancelled") } catch { }
+        _ = try await api.fetchNewReleases()
+        XCTAssertEqual(SessionProtocol.fixture.snapshot().0, 1)
+        XCTAssertEqual(SessionProtocol.fixture.snapshot().1, ["Bearer refreshed"])
     }
     @MainActor func testOldRefreshCannotReplaceReconnectedSession() async throws {
         let ready = expectation(description: "Old refresh started"); SessionProtocol.fixture.reset(ready)

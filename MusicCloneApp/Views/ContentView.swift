@@ -2,13 +2,15 @@ import SwiftUI
 
 struct ContentView: View {
     let spotifyAPI: SpotifyAPI
+    @State private var selectedTab = 0
     var body: some View {
-        TabView {
-            HomeView(spotifyAPI: spotifyAPI).tabItem { Label("Home", systemImage: "house") }
-            SearchView(spotifyAPI: spotifyAPI).tabItem { Label("Search", systemImage: "magnifyingglass") }
-            LibraryView().tabItem { Label("Library", systemImage: "square.stack") }
-        }
-        .safeAreaInset(edge: .bottom, spacing: 0) { NowPlayingBar() }
-        .tint(.mint)
+        VStack(spacing: 0) {
+            TabView(selection: $selectedTab) {
+                HomeView(spotifyAPI: spotifyAPI).tabItem { Label("Home", systemImage: "house") }.tag(0)
+                SearchView(spotifyAPI: spotifyAPI).tabItem { Label("Search", systemImage: "magnifyingglass") }.tag(1)
+                LibraryView().tabItem { Label("Library", systemImage: "square.stack") }.tag(2)
+            }.frame(maxHeight: .infinity)
+            NowPlayingBar()
+        }.tint(.mint)
     }
 }

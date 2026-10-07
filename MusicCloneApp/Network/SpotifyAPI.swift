@@ -62,10 +62,11 @@ import Combine
             if sessionID == generation && refreshID == taskID { refreshTask = nil; refreshID = nil }
         }
         let token = try await task.value
-        try Task.checkCancellation()
         guard sessionID == generation, !isDemo else { throw CatalogError.signedOut }
         // The first waiter installs the result. A late waiter must not overwrite a newer refresh.
         if refreshID == taskID { applyToken(token) }
+        // Caller cancellation must not discard a successful result shared by other waiters.
+        try Task.checkCancellation()
         guard let currentToken = self.accessToken else { throw CatalogError.signedOut }
         return currentToken
     }
